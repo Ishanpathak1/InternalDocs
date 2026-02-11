@@ -58,6 +58,52 @@ const writtenDate = entry.data.pubDate
       color: #334155 !important;
       font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
     }
+    /* Tables: clean layout and readable font */
+    .doc-prose table {
+      font-family: 'Source Sans 3', system-ui, sans-serif;
+      font-size: 0.9375rem;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .doc-prose table th,
+    .doc-prose table td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+      text-align: left;
+    }
+    html.dark .doc-prose table th,
+    html.dark .doc-prose table td {
+      border-bottom-color: #475569;
+    }
+    .doc-prose table th {
+      font-weight: 600;
+      color: #475569;
+    }
+    html.dark .doc-prose table th {
+      color: #94a3b8;
+    }
+    .doc-prose table td {
+      color: #334155;
+    }
+    html.dark .doc-prose table td {
+      color: #cbd5e1;
+    }
+    /* Inline code inside tables: subtle, same font as table text */
+    .doc-prose table code {
+      font-family: 'Source Sans 3', system-ui, sans-serif !important;
+      font-size: inherit !important;
+      font-weight: 500;
+      background: #f1f5f9 !important;
+      color: #1e293b !important;
+      padding: 0.15em 0.4em !important;
+      border-radius: 4px;
+      border: none;
+    }
+    html.dark .doc-prose table code {
+      background: #334155 !important;
+      color: #e2e8f0 !important;
+    }
   </style>
   <article
     class="mx-auto max-w-[900px] rounded-2xl bg-white px-6 py-10 shadow-sm transition-colors dark:bg-slate-800 dark:shadow-none sm:px-12 sm:py-14"

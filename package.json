@@ -9,11 +9,12 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^5.0.0",
     "@astrojs/node": "^9.0.0",
     "@astrojs/tailwind": "^6.0.0",
-    "tailwindcss": "^3.4.0",
-    "jose": "^5.9.0"
+    "@astrojs/vercel": "^9.0.4",
+    "astro": "^5.0.0",
+    "jose": "^5.9.0",
+    "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
