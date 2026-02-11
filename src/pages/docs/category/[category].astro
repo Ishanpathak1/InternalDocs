@@ -61,7 +61,7 @@ const docs = allDocs
     {categoryName === 'HFNY' && (() => {
       const byTopic = new Map();
       for (const d of docs) {
-        const t = d.data.topic?.trim() || 'Other';
+        const t = d.data.topic?.trim() || 'Technical Docs For HFNY';
         if (!byTopic.has(t)) byTopic.set(t, []);
         byTopic.get(t).push(d);
       }

@@ -5,13 +5,12 @@ pubDate: 2025-02-11
 description: Standard operating procedure for building forms in the HFNY app — UI patterns, design, data access, testing, step-by-step form creation, JavaScript, landing pages, and database setup.
 codeLocation: HFNY/Admin/DeletedDataDashboard.aspx
 categories: ["HFNY"]
+topic: Technical Docs For HFNY
 ---
 
 # Form Development SOP for New Developers
 
-## Goal
 
-Document the standard operating procedure for building forms in the HFNY app so new and future developers follow consistent patterns. The reference implementation is **HFNY/Admin/DeletedDataDashboard.aspx**.
 
 ---
 
