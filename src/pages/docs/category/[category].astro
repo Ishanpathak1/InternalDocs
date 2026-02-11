@@ -2,45 +2,106 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
-const CATEGORIES = ['HFNY', 'Kinship', 'OCFS', 'PICHC'] as const;
-type Category = (typeof CATEGORIES)[number];
+const MAIN_CATEGORIES = ['HFNY', 'Kinship', 'OCFS Prevention', 'PICHC', 'Need help'];
+const SLUG_TO_NAME = Object.fromEntries(MAIN_CATEGORIES.map((c) => [c.toLowerCase().replace(/\s+/g, '-'), c]));
 
-const categorySlug = Astro.params.category?.toLowerCase();
-const categoryMap: Record<string, Category> = {
-  hfny: 'HFNY',
-  kinship: 'Kinship',
-  ocfs: 'OCFS',
-  pichc: 'PICHC',
-};
-const category = categorySlug ? categoryMap[categorySlug] : null;
-
-if (!category) {
+const slugParam = Astro.params.category?.toLowerCase();
+if (!slugParam || !SLUG_TO_NAME[slugParam]) {
   return Astro.redirect('/');
 }
+const categoryName = SLUG_TO_NAME[slugParam];
 
 const allDocs = await getCollection('docs');
 const docs = allDocs
-  .filter((d) => {
-    const cats = d.data.categories ?? [];
-    return Array.isArray(cats) ? cats.some((c) => String(c) === category) : String(cats) === category;
-  })
+  .filter((d) => (d.data.categories ?? []).some((c) => String(c).trim() === categoryName))
   .sort((a, b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0));
 ---
-<BaseLayout title={`${category} – CHSR Docs`}>
+<BaseLayout title={`${categoryName} – CHSR Docs`}>
   <div class="mx-auto max-w-4xl">
     <nav class="mb-6 text-sm text-slate-600 dark:text-slate-400">
       <a href="/" class="hover:text-slate-900 dark:hover:text-slate-200">Home</a>
       <span class="mx-1">/</span>
-      <span class="text-slate-900 dark:text-slate-200">{category}</span>
+      <span class="text-slate-900 dark:text-slate-200">{categoryName}</span>
     </nav>
-    <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{category}</h1>
+    <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{categoryName}</h1>
     <p class="mt-2 text-slate-600 dark:text-slate-400">
-      All docs in this category. Code locations are in each doc’s frontmatter (<code class="rounded bg-slate-100 px-1 dark:bg-slate-700">codeLocation</code>).
+      All docs in this category.
+      {categoryName === 'HFNY' && (
+        <span> Includes CHSR Wiki docs by topic (git, azure, Michigan, etc.).</span>
+      )}
     </p>
 
-    <ul class="mt-8 space-y-3">
-      {docs.map((doc) => (
-        <li>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <input
+        type="search"
+        id="doc-search"
+        placeholder="Search by title..."
+        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+      />
+      <select
+        id="doc-author"
+        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+      >
+        <option value="">All authors</option>
+        {[...new Set(docs.map((d) => d.data.author).filter(Boolean))].sort().map((a) => (
+          <option value={a}>{a}</option>
+        ))}
+      </select>
+      <select
+        id="doc-sort"
+        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+      >
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+        <option value="title">Title A–Z</option>
+      </select>
+    </div>
+
+    <div id="doc-list" class="mt-6 space-y-3">
+    {categoryName === 'HFNY' && (() => {
+      const byTopic = new Map();
+      for (const d of docs) {
+        const t = d.data.topic?.trim() || 'Other';
+        if (!byTopic.has(t)) byTopic.set(t, []);
+        byTopic.get(t).push(d);
+      }
+      const topics = [...byTopic.keys()].sort();
+      return (
+        <div class="space-y-6">
+          {topics.map((topic) => (
+            <section class="doc-section" data-topic={topic}>
+              <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-2">{topic}</h2>
+              <ul class="space-y-2">
+                {byTopic.get(topic).map((doc) => (
+                  <li
+                    class="doc-item"
+                    data-title={(doc.data.title || '').toLowerCase()}
+                    data-author={(doc.data.author || '').toLowerCase()}
+                    data-date={doc.data.pubDate?.toISOString() ?? ''}
+                  >
+                    <a
+                      href={`/docs/${doc.id}`}
+                      class="block rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700/50"
+                    >
+                      <span class="font-medium">{doc.data.title}</span>
+                      {doc.data.author && <span class="ml-2 text-slate-500 dark:text-slate-400">by {doc.data.author}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      );
+    })()}
+
+    {categoryName !== 'HFNY' && docs.map((doc) => (
+        <div
+          class="doc-item"
+          data-title={(doc.data.title || '').toLowerCase()}
+          data-author={(doc.data.author || '').toLowerCase()}
+          data-date={doc.data.pubDate?.toISOString() ?? ''}
+        >
           <a
             href={`/docs/${doc.id}`}
             class="block rounded-xl border border-slate-200 bg-white p-4 text-slate-800 shadow-sm hover:border-slate-300 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700/50 dark:hover:border-slate-500"
@@ -55,9 +116,9 @@ const docs = allDocs
               </span>
             )}
           </a>
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
     {docs.length === 0 && (
       <p class="mt-6 text-slate-500 dark:text-slate-400">No docs in this category yet.</p>
     )}
@@ -68,4 +129,40 @@ const docs = allDocs
       </a>
     </p>
   </div>
+  <script>
+    function applyFilters() {
+      const search = (document.getElementById('doc-search')?.value ?? '').toLowerCase().trim();
+      const author = (document.getElementById('doc-author')?.value ?? '').toLowerCase().trim();
+      const sort = document.getElementById('doc-sort')?.value ?? 'date-desc';
+      const list = document.getElementById('doc-list');
+      if (!list) return;
+      const items = [...list.querySelectorAll('.doc-item')];
+      const cmp = (a, b) => {
+        if (sort === 'title') return (a.dataset.title ?? '').localeCompare(b.dataset.title ?? '');
+        const da = a.dataset.date ?? '';
+        const db = b.dataset.date ?? '';
+        return sort === 'date-asc' ? da.localeCompare(db) : db.localeCompare(da);
+      };
+      items.forEach((el) => {
+        const matchSearch = !search || (el.dataset.title ?? '').includes(search);
+        const matchAuthor = !author || (el.dataset.author ?? '').includes(author);
+        el.style.display = matchSearch && matchAuthor ? '' : 'none';
+      });
+      list.querySelectorAll('.doc-section').forEach((sec) => {
+        const vis = [...sec.querySelectorAll('.doc-item')].filter((el) => el.style.display !== 'none');
+        sec.style.display = vis.length ? '' : 'none';
+        const ul = sec.querySelector('ul');
+        if (ul) {
+          [...ul.querySelectorAll('.doc-item')].sort(cmp).forEach((el) => ul.appendChild(el));
+        }
+      });
+      const flatItems = list.querySelectorAll(':scope > .doc-item');
+      if (flatItems.length) {
+        [...flatItems].sort(cmp).forEach((el) => list.appendChild(el));
+      }
+    }
+    document.getElementById('doc-search')?.addEventListener('input', applyFilters);
+    document.getElementById('doc-author')?.addEventListener('change', applyFilters);
+    document.getElementById('doc-sort')?.addEventListener('change', applyFilters);
+  </script>
 </BaseLayout>

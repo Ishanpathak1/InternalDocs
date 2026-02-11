@@ -4,7 +4,7 @@ author: Internal Team
 pubDate: 2025-02-11
 description: Step-by-step guide to adding or updating documentation. Includes updating the docs directory and where developers keep code.
 codeLocation: src/content/docs/
-categories: ["HFNY", "Kinship", "OCFS", "PICHC"]
+categories: ["Need help"]
 ---
 
 # How to add a doc
@@ -68,7 +68,7 @@ categories: [HFNY]
 | `title`       | Display title of the doc. |
 | `author`      | Your name (or team name). |
 | `pubDate`     | Date written (YYYY-MM-DD). |
-| `categories`  | One or more of: `HFNY`, `Kinship`, `OCFS`, `PICHC`. Controls which section(s) the doc appears in on the home page. Use multiple for docs that apply to all, e.g. `[HFNY, Kinship, OCFS, PICHC]`. |
+| `categories`  | One or more category names (strings). The site derives its category list from all docs, so use the same names as other docs in that category (e.g. from CHSR Wiki or existing docs). |
 
 **Optional:**
 
@@ -95,6 +95,6 @@ Below the closing `---`, write your content in Markdown (headings, lists, code b
 
 1. **Clone** the [repo](https://github.com/Ishanpathak1/InternalDocs), create a branch (e.g. `doc-your-doc-name`).
 2. Add or edit a `.md` file in **`src/content/docs/`** (that *is* the directory — no extra list to update).
-3. Set **frontmatter**: `title`, `author`, `pubDate`, and `categories` (one or more of HFNY, Kinship, OCFS, PICHC).
+3. Set **frontmatter**: `title`, `author`, `pubDate`, and `categories` (one or more of HFNY, Kinship, OCFS Prevention, PICHC).
 4. Use **`codeLocation`** so developers know where the code lives.
 5. **Open a PR** with a title like “Add doc: Your Doc Title”; after merge, the doc shows in the right category.

@@ -2,19 +2,23 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const CATEGORIES = ['HFNY', 'Kinship', 'OCFS', 'PICHC'] as const;
-type Category = (typeof CATEGORIES)[number];
+const MAIN_CATEGORIES = ['HFNY', 'Kinship', 'OCFS Prevention', 'PICHC', 'Need help'];
+
+function categoryToSlug(cat) {
+  return String(cat)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') || 'general';
+}
+
 
 const allDocs = await getCollection('docs');
-const byCategory = (cat: Category) =>
-  allDocs
-    .filter((d) => {
-      const cats = d.data.categories ?? [];
-      return Array.isArray(cats) ? cats.some((c) => String(c) === cat) : String(cats) === cat;
-    })
-    .length;
-
-const categorySlug = (cat: Category) => cat.toLowerCase();
+const categories = MAIN_CATEGORIES;
+const byCategory = (cat) =>
+  allDocs.filter((d) => (d.data.categories ?? []).some((c) => String(c).trim() === cat)).length;
 ---
 <BaseLayout title="CHSR Docs" showNav={true}>
   <div class="mx-auto max-w-4xl">
@@ -26,9 +30,9 @@ const categorySlug = (cat: Category) => cat.toLowerCase();
     </header>
 
     <div class="grid gap-4 sm:grid-cols-2">
-      {CATEGORIES.map((cat) => {
+      {categories.map((cat) => {
         const count = byCategory(cat);
-        const slug = categorySlug(cat);
+        const slug = categoryToSlug(cat);
         return (
           <a
             href={`/docs/category/${slug}`}
@@ -47,8 +51,7 @@ const categorySlug = (cat: Category) => cat.toLowerCase();
     </div>
 
     <p class="mt-10 text-center text-sm text-slate-500 dark:text-slate-400">
-      New here? Read the <a href="/docs/welcome" class="underline">Welcome</a> and
-      <a href="/docs/how-to-add-a-doc" class="underline">How to add a doc</a>.
+      <a href="/docs/category/need-help" class="underline">Need help?</a> Welcome and How to add a doc are in the Need help category.
     </p>
   </div>
 </BaseLayout>
