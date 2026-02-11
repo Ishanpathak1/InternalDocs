@@ -1,10 +1,6 @@
-# Internal Docs
+# Docs
 
-Internal-only documentation site (Astro). Sign in with a one-time access code; admins can generate codes.
-
-## Admin access
-
-**Your email gets admin access** if it’s listed in `data/admins.json`. Replace `your-email@example.com` in that file with your real email (e.g. `you@company.com`). After you sign in with an access code using that email, you’ll see the **Admin** link and can generate access codes for others.
+Public documentation site (Astro). Anyone can browse. No login.
 
 ## Commands
 
@@ -12,17 +8,22 @@ Internal-only documentation site (Astro). Sign in with a one-time access code; a
 - `npm run build` – build for production
 - `npm run preview` – preview production build
 
-## Env (optional)
+## Adding docs
 
-- `SECRET` – used to sign session cookies (defaults to a dev value; set in production).
+Add or edit Markdown files in `src/content/docs/`. Each file needs frontmatter:
 
-## Deploying on Vercel
+```yaml
+---
+title: Your Doc Title
+author: Your Name
+pubDate: 2025-02-11
+description: Optional short description
+codeLocation: Optional path or repo link
+---
+```
 
-The project is configured with `@astrojs/vercel` so SSR works on Vercel. Deploy by connecting your GitHub repo in the [Vercel dashboard](https://vercel.com) or with `vercel` CLI.
+Push to your repo; on Vercel (or similar) the site rebuilds and the new doc appears.
 
-**Important – file-based data:** The app stores users, access codes, and admins in `data/*.json` and writes to these files at runtime (login, set password, generate code, upload doc). On Vercel, serverless functions use a **read-only filesystem**; only files bundled at build time are available, and any write will fail or be lost. So on Vercel:
+## Deploying
 
-- **Reads** of `data/` from the build will work.
-- **Writes** (new users, consuming codes, new codes, new docs) will not persist.
-
-For a production deployment on Vercel you’d need to switch to a database (e.g. Vercel Postgres, Turso, or a third-party API) instead of JSON files. For a read-only docs site or a quick preview, the current setup can still be deployed; just don’t rely on sign-up, code generation, or doc upload working after deploy.
+Works on **Vercel** (or any Node/serverless host). Connect your GitHub repo in the [Vercel dashboard](https://vercel.com) or use the `vercel` CLI. No database or env vars required for the public site.

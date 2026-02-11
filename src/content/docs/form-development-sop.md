@@ -4,6 +4,7 @@ author: Ishan Pathak
 pubDate: 2025-02-11
 description: Standard operating procedure for building forms in the HFNY app — UI patterns, design, data access, testing, step-by-step form creation, JavaScript, landing pages, and database setup.
 codeLocation: HFNY/Admin/DeletedDataDashboard.aspx
+categories: ["HFNY"]
 ---
 
 # Form Development SOP for New Developers
