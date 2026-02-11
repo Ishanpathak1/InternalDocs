@@ -1,0 +1,107 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const user = Astro.locals.user ?? null;
+if (!user) {
+  return Astro.redirect('/login');
+}
+
+const entries = await getCollection('docs');
+const docs = entries.sort((a, b) => {
+  const aDate = a.data.pubDate?.valueOf() ?? 0;
+  const bDate = b.data.pubDate?.valueOf() ?? 0;
+  return bDate - aDate;
+});
+---
+<BaseLayout title="Docs" user={user}>
+  <div class="mx-auto max-w-5xl">
+  <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Documentation</h1>
+  <p class="mt-1 text-slate-600 dark:text-slate-400">All internal docs. Add content via PR or upload.</p>
+
+  <section class="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800">
+    <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-200">Upload a doc</h2>
+    <p class="mt-1 text-xs text-slate-600 dark:text-slate-400">
+      Your .md file must have frontmatter with: <strong>title</strong>, <strong>author</strong>, and <strong>pubDate</strong> (date written). Optional: <strong>description</strong>, <strong>codeLocation</strong> (path or repo link). See the Welcome doc for the exact format.
+    </p>
+    <form id="upload-doc-form" class="mt-3 flex flex-wrap items-end gap-3">
+      <div>
+        <label for="doc-file" class="block text-xs font-medium text-slate-700 dark:text-slate-300">Markdown file</label>
+        <input
+          type="file"
+          id="doc-file"
+          name="file"
+          accept=".md"
+          required
+          class="mt-1 block text-sm text-slate-600 file:mr-2 file:rounded file:border-0 file:bg-slate-700 file:px-3 file:py-1.5 file:text-white file:text-sm"
+        />
+      </div>
+      <button
+        type="submit"
+        id="upload-btn"
+        class="rounded bg-slate-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-600"
+      >
+        Upload
+      </button>
+    </form>
+    <p id="upload-message" class="mt-2 hidden text-sm"></p>
+  </section>
+
+  <h2 class="mt-8 text-lg font-semibold text-slate-800 dark:text-slate-200">All docs</h2>
+  <ul class="mt-3 space-y-2">
+    {docs.map((doc) => (
+      <li>
+        <a
+          href={`/docs/${doc.id}`}
+          class="block rounded border border-slate-200 bg-white px-4 py-3 text-slate-800 hover:bg-slate-50 hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:border-slate-500"
+        >
+          <span class="font-medium">{doc.data.title}</span>
+          {doc.data.author && <span class="ml-2 text-slate-500 dark:text-slate-400">by {doc.data.author}</span>}
+          {doc.data.description && (
+            <span class="ml-2 text-slate-500 dark:text-slate-400">— {doc.data.description}</span>
+          )}
+        </a>
+      </li>
+    ))}
+  </ul>
+  {docs.length === 0 && (
+    <p class="mt-4 text-slate-500 dark:text-slate-400">No docs yet. Add .md files via PR or use Upload above.</p>
+  )}
+  </div>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('upload-doc-form') as HTMLFormElement;
+  const btn = document.getElementById('upload-btn') as HTMLButtonElement;
+  const msg = document.getElementById('upload-message') as HTMLParagraphElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!btn || !msg) return;
+    const fileInput = form.querySelector('input[name="file"]') as HTMLInputElement;
+    if (!fileInput?.files?.length) return;
+
+    btn.disabled = true;
+    msg.classList.add('hidden');
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    try {
+      const res = await fetch('/api/upload-doc', { method: 'POST', body: formData, credentials: 'include' });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        msg.textContent = `Uploaded "${data.slug || 'doc'}.md". Refresh the page to see it in the list (restart dev server if it doesn't appear).`;
+        msg.classList.remove('hidden', 'text-red-600', 'dark:text-red-400');
+        msg.classList.add('text-green-700', 'dark:text-green-300');
+        form.reset();
+        return;
+      }
+      msg.textContent = data.error || 'Upload failed';
+      msg.classList.remove('hidden', 'text-green-700', 'dark:text-green-300');
+      msg.classList.add('text-red-600', 'dark:text-red-400');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>

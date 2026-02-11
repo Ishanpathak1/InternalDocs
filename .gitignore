@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+.astro/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS & editor
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+
+# Optional: uncomment to keep secrets out of the repo
+# data/
