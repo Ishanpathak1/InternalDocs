@@ -7,15 +7,15 @@ categories: ["HFNY"]
 topic: HFNY
 ---
 
-&lt;pre&gt;&lt;code&gt;
---FROG -&gt; Parent Survey conversion
-DECLARE @PC1ID VARCHAR(13) = &#39;&#39;
+<pre><code>
+--FROG -> Parent Survey conversion
+DECLARE @PC1ID VARCHAR(13) = ''
 DECLARE @HVCaseFK INT = (SELECT TOP(1) cp.HVCaseFK FROM dbo.CaseProgram cp WHERE cp.PC1ID = @PC1ID)
 DECLARE @KempePK INT = (SELECT TOP(1) k.KempePK FROM dbo.Kempe k WHERE k.HVCaseFK = @HVCaseFK)
 DECLARE @KempeResult BIT = 1
 
 --Convert the Pre-Assessment
-UPDATE dbo.Preassessment SET KempeResult = @KempeResult WHERE CaseStatus = &#39;02&#39; AND HVCaseFK = @HVCaseFK
+UPDATE dbo.Preassessment SET KempeResult = @KempeResult WHERE CaseStatus = '02' AND HVCaseFK = @HVCaseFK
 
 --Convert the Kempe (they need to re-enter scores)
 UPDATE dbo.Kempe SET 
@@ -82,38 +82,38 @@ UPDATE dbo.Kempe SET
                 FROG_SCE_P2Comments = NULL,
 				NegativeReferral = CASE WHEN @KempeResult = 1 THEN 0 ELSE 1 END,
 				KempeResult = @KempeResult,
-				DadBondingArea = &#39;U&#39;,
-                 DadChildHistoryArea = &#39;U&#39;,
-                 DadCPSArea = &#39;U&#39;,
-                 DadDisciplineArea = &#39;U&#39;,
-                 DadExpectationArea = &#39;U&#39;,
-                 DadPerceptionArea = &#39;U&#39;,
-                 DadSAMICHArea = &#39;U&#39;,
+				DadBondingArea = 'U',
+                 DadChildHistoryArea = 'U',
+                 DadCPSArea = 'U',
+                 DadDisciplineArea = 'U',
+                 DadExpectationArea = 'U',
+                 DadPerceptionArea = 'U',
+                 DadSAMICHArea = 'U',
                  DadScore = 0,
-                 DadSelfEsteemArea = &#39;U&#39;,
-                 DadStressorArea = &#39;U&#39;,
-                 DadViolentArea = &#39;U&#39;,
-                 MomBondingArea = &#39;U&#39;,
-                 MomChildHistoryArea = &#39;U&#39;,
-                 MomCPSArea = &#39;U&#39;,
-                 MomDisciplineArea = &#39;U&#39;,
-                 MomExpectationArea = &#39;U&#39;,
-                 MomPerceptionArea = &#39;U&#39;,
-                 MomSAMICHArea = &#39;U&#39;,
+                 DadSelfEsteemArea = 'U',
+                 DadStressorArea = 'U',
+                 DadViolentArea = 'U',
+                 MomBondingArea = 'U',
+                 MomChildHistoryArea = 'U',
+                 MomCPSArea = 'U',
+                 MomDisciplineArea = 'U',
+                 MomExpectationArea = 'U',
+                 MomPerceptionArea = 'U',
+                 MomSAMICHArea = 'U',
                  MomScore = 0,
-                 MomSelfEsteemArea = &#39;U&#39;,
-                 MomStressorArea = &#39;U&#39;,
-                 MomViolentArea = &#39;U&#39;,
-                 PartnerBondingArea = &#39;U&#39;,
-                 PartnerChildHistoryArea = &#39;U&#39;,
-                 PartnerCPSArea = &#39;U&#39;,
-                 PartnerDisciplineArea = &#39;U&#39;,
-                 PartnerExpectationArea = &#39;U&#39;,
-                 PartnerPerceptionArea = &#39;U&#39;,
-                 PartnerSAMICHArea = &#39;U&#39;,
+                 MomSelfEsteemArea = 'U',
+                 MomStressorArea = 'U',
+                 MomViolentArea = 'U',
+                 PartnerBondingArea = 'U',
+                 PartnerChildHistoryArea = 'U',
+                 PartnerCPSArea = 'U',
+                 PartnerDisciplineArea = 'U',
+                 PartnerExpectationArea = 'U',
+                 PartnerPerceptionArea = 'U',
+                 PartnerSAMICHArea = 'U',
                  PartnerScore = 0,
-                 PartnerSelfEsteemArea = &#39;U&#39;,
-                 PartnerStressorArea = &#39;U&#39;,
-                 PartnerViolentArea = &#39;U&#39;
+                 PartnerSelfEsteemArea = 'U',
+                 PartnerStressorArea = 'U',
+                 PartnerViolentArea = 'U'
 				 WHERE KempePK = @KempePK
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>

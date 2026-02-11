@@ -7,4 +7,4 @@ categories: ["HFNY"]
 topic: Pyramid
 ---
 
-See attached document.
+See the [Pyramid Report Wiki document](/attachments/pyramid-report-wiki.docx) (Word) for details.

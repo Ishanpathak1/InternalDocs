@@ -7,8 +7,9 @@ categories: ["HFNY"]
 topic: HFNY
 ---
 
---This TSQL Code deletes all cases prior to a certain time.  Best use is on demo site to keep it running fast on the slower Azure test pool
+This T-SQL code deletes all cases prior to a certain date. Best used on the demo site to keep it running fast on the slower Azure test pool.
 
+```sql
 DECLARE @deletedate AS DATE 
 DECLARE @AreYouSure AS VARCHAR(3)
 
@@ -987,3 +988,4 @@ END
  Begin
  Drop Table #CasesToDelete
  END
+```

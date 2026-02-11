@@ -9,7 +9,7 @@ categories: ["Need help"]
 
 # Welcome
 
-This is the **CHSR** documentation site. Docs are organized into **HFNY**, **Kinship**, **OCFS Prevention**, **PICHC**, and **Need help** (Welcome, How to add a doc).
+This is the **CHSR** documentation site. Docs are organized into **HFNY**, **Kinship**, **OCFS Prevention**, **PICHC**, **IT Dept Management**, and **Need help** (Welcome, How to add a doc).
 
 Content is stored as Markdown in **`src/content/docs/`**. That folder *is* the docs directory — add or edit `.md` files there; there is no separate directory list to update. After you push, the site rebuilds and new docs show up in the right category.
 

@@ -7,10 +7,20 @@ categories: ["HFNY"]
 topic: Michigan
 ---
 
---This TSQL Code deletes all case information, stored procedures, and other tables that are not specific to the program that will be using this database
---Put in the programfk number (see below) that you want TO KEEP.  All other program data gets deleted.
+This T-SQL code deletes all case information, stored procedures, and other tables that are not specific to the program that will be using this database. Set the `@programfk` to the program you want to **keep**—all other program data will be deleted.
 
+Program reference (hvprogrampk | ProgramName):
 
+- 5 = LMAS - District Health Dept
+- 6 = Healthy Families Northern Michigan
+- 8 = Kent County Healthy Families
+- 10 = Healthy Families CCWM
+- 11 = Saginaw County Healthy Families
+- 15 = HFA-Wayne
+- 16 = Kalamazoo Healthy Families
+- 19 = Healthy Families Livingston
+
+```sql
 --hvprogrampk LeadAgencyName ProgramName
 --5 LMAS - District Health Dept                                            LMAS - District Health Dept                                 
 --6 Health Department of Northwest Michigan                                Healthy Families Northern Michigan                          
@@ -1066,6 +1076,6 @@ end
  --Delete ReportHistory Table
  IF OBJECT_ID('dbo.ReportHistory', 'U') IS NOT NULL 
  DROP TABLE dbo.ReportHistory
- 
 
 end
+```

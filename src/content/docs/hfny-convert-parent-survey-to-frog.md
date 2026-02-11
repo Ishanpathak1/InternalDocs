@@ -7,14 +7,14 @@ categories: ["HFNY"]
 topic: HFNY
 ---
 
-&lt;pre&gt;&lt;code&gt;
---Parent Survey -&gt; FROG conversion
-DECLARE @PC1ID VARCHAR(13) = &#39;&#39;
+<pre><code>
+--Parent Survey -> FROG conversion
+DECLARE @PC1ID VARCHAR(13) = ''
 DECLARE @HVCaseFK INT = (SELECT TOP(1) cp.HVCaseFK FROM dbo.CaseProgram cp WHERE cp.PC1ID = @PC1ID)
 DECLARE @KempePK INT = (SELECT TOP(1) k.KempePK FROM dbo.Kempe k WHERE k.HVCaseFK = @HVCaseFK)
 
 --Convert the Pre-Assessment
-UPDATE dbo.Preassessment SET KempeResult = NULL WHERE CaseStatus = &#39;02&#39; AND HVCaseFK = @HVCaseFK
+UPDATE dbo.Preassessment SET KempeResult = NULL WHERE CaseStatus = '02' AND HVCaseFK = @HVCaseFK
 
 --Convert the Kempe (they need to re-enter scores)
 UPDATE dbo.Kempe SET 
@@ -55,4 +55,4 @@ UPDATE dbo.Kempe SET
                  PartnerViolentArea = NULL,
 				 FROG_IsFormFrog = 1
 				 WHERE KempePK = @KempePK
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>

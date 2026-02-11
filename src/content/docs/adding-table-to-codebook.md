@@ -7,4 +7,4 @@ categories: ["HFNY"]
 topic: Word
 ---
 
-After creating a New Section using &quot;Next Section Break&quot;, click on the header footer and under the ribbon &quot;Header and Footer&quot; click on &quot;Link to Previous&quot; and say &quot;NO&quot;
+After creating a New Section using "Next Section Break", click on the header footer and under the ribbon "Header and Footer" click on "Link to Previous" and say "NO"

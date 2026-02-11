@@ -7,6 +7,6 @@ categories: ["HFNY"]
 topic: git
 ---
 
-Open Git Extensions.  Under Plugins choose &quot;Release Notes Generator&quot;.  Put this code in &#39;git log arguments&#39; text box.
+Open Git Extensions.  Under Plugins choose "Release Notes Generator".  Put this code in 'git log arguments' text box.
 
---date=local --pretty=format:&quot;%h - %ad, %ar : %s&quot;
+--date=local --pretty=format:"%h - %ad, %ar : %s"

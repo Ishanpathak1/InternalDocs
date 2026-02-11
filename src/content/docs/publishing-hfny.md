@@ -7,4 +7,4 @@ categories: ["HFNY"]
 topic: HFNY
 ---
 
-See the attached document.
+See the [HFNY Publish document](/attachments/hfny-publish-doc.pdf) (PDF).

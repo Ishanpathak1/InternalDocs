@@ -1,5 +1,5 @@
 ---
-title: Change a case from single birth to multiple (or visa versa)
+title: Change a case from single birth to multiple (or vice versa)
 author: jrobohn
 pubDate: 2019-05-08
 description: "CHSR Wiki"
@@ -7,6 +7,9 @@ categories: ["HFNY"]
 topic: HFNY
 ---
 
+Use the script below to correct the number of children (TCNumber) for a case—converting between single and multiple birth.
+
+```sql
 /*
 exec Script-To-Correct-NumberOfChildren-(TCNumber)
 */
@@ -17,8 +20,8 @@ declare @HVCaseFK int
 declare @TCDOB date
 declare @IntakeDate date
 
--- set @PC1ID = &#39;ES8301063559&#39;
-set @PC1ID = &#39;thepc1id&#39;
+-- set @PC1ID = 'ES8301063559'
+set @PC1ID = 'thepc1id'
 
 -- if TCNumber was set to 1 (single TC) then set corrected to 2 and CaseProgress back to 10
 set @CorrectedTCNumber = 2 
@@ -82,13 +85,13 @@ where HVCasePK = @HVCaseFK
 
 -- update MultipleBirth and NumberOfChildren
 update TCID 
-set MultipleBirth = case when @CorrectedTCNumber &gt; 1 then 1 else 0 end
+set MultipleBirth = case when @CorrectedTCNumber > 1 then 1 else 0 end
 	, NumberOfChildren = @CorrectedTCNumber
 where HVCaseFK = @HVCaseFK
 
 -- if the case was pre-natal, adding one TCID would have changed the case to Level 1, 
 --	so we will need to do level updates
-if (@TCDOB &gt; @IntakeDate)
+if (@TCDOB > @IntakeDate)
 	begin
 		declare @CurrentLevelFK int
 		declare @CurrentLevelDate date
@@ -109,3 +112,4 @@ if (@TCDOB &gt; @IntakeDate)
 		where PC1ID = @PC1ID
 
 	end
+```

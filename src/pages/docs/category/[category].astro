@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
-const MAIN_CATEGORIES = ['HFNY', 'Kinship', 'OCFS Prevention', 'PICHC', 'Need help'];
+const MAIN_CATEGORIES = ['HFNY', 'Kinship', 'OCFS Prevention', 'PICHC', 'IT Dept Management', 'Need help'];
 const SLUG_TO_NAME = Object.fromEntries(MAIN_CATEGORIES.map((c) => [c.toLowerCase().replace(/\s+/g, '-'), c]));
 
 const slugParam = Astro.params.category?.toLowerCase();

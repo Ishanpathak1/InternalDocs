@@ -7,4 +7,4 @@ categories: ["HFNY"]
 topic: git
 ---
 
-See the attached file for steps.
+See the [Fixing a Bad Merge or Commit guide](/attachments/fixing-bad-merge-commit.docx) (Word) for detailed steps.

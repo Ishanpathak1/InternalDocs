@@ -7,10 +7,11 @@ categories: ["HFNY"]
 topic: HFNY
 ---
 
-To change a case from multiple birth to single birth, you just have to run this code with the proper values:
+To change a case from multiple birth to single birth, run the script below with the proper values.
 
-NOTE: Depending on the level history you may have to delete a level.
+> **Note:** Depending on the level history you may have to delete a level.
 
+```sql
 DECLARE @pc1id VARCHAR(13) = ''
 DECLARE @hvcasefk INT = 0
 
@@ -24,3 +25,4 @@ SELECT * FROM dbo.HVLevel hl WHERE hl.HVCaseFK = @hvcasefk
 --UPDATE dbo.TCID SET MultipleBirth = 0, TCIDEditDate = GETDATE(), TCIDEditor = 'bsimmons' WHERE TCIDPK = 
 --UPDATE dbo.CaseProgram SET CurrentLevelFK = 14, CaseProgramEditor = 'bsimmons', CaseProgramEditDate = GETDATE() WHERE CaseProgramPK = 
 --UPDATE dbo.HVLevel SET LevelFK = 14, HVLevelEditor = 'bsimmons', HVLevelEditDate = GETDATE() WHERE HVLevelPK =
+```

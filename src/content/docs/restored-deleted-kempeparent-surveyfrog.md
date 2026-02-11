@@ -7,4 +7,6 @@ categories: ["HFNY"]
 topic: SQL
 ---
 
-See the attached file.
+Use the [HFNY Restore Kempe/Parent Survey/FROG SQL script](/attachments/hfny-restore-kempe-parent-survey-frog.sql) to restore a deleted Kempe, Parent Survey, or FROG record.
+
+**Note:** This does not restore deleted attachments (they are removed from Azure storage).

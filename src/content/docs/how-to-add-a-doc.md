@@ -95,6 +95,6 @@ Below the closing `---`, write your content in Markdown (headings, lists, code b
 
 1. **Clone** the [repo](https://github.com/Ishanpathak1/InternalDocs), create a branch (e.g. `doc-your-doc-name`).
 2. Add or edit a `.md` file in **`src/content/docs/`** (that *is* the directory — no extra list to update).
-3. Set **frontmatter**: `title`, `author`, `pubDate`, and `categories` (one or more of HFNY, Kinship, OCFS Prevention, PICHC).
+3. Set **frontmatter**: `title`, `author`, `pubDate`, and `categories` (one or more of HFNY, Kinship, OCFS Prevention, PICHC, IT Dept Management).
 4. Use **`codeLocation`** so developers know where the code lives.
 5. **Open a PR** with a title like “Add doc: Your Doc Title”; after merge, the doc shows in the right category.

@@ -7,4 +7,4 @@ categories: ["HFNY"]
 topic: SQL
 ---
 
-See attached sql script
+Use the [Data Entry Editor by User SQL script](/attachments/DataEntry_Editor_ByUser.sql) to find who created or edited forms. Set `@stdate`, `@enddate`, `@programlist`, and the `LoginEditor` filter at the end for your query.

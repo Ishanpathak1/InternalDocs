@@ -8,6 +8,6 @@ topic: DevExpress
 ---
 
 To customize the file name of an exported report in DevExpress, please add the following to the code behind:
-&lt;pre&gt;&lt;code&gt;XtraReport1 rep = new XtraReport1();  
-            rep.Name = &quot;1234&quot;;  
-            ReportViewer1.Report = rep;&lt;/code&gt;&lt;/pre&gt;
+<pre><code>XtraReport1 rep = new XtraReport1();  
+            rep.Name = "1234";  
+            ReportViewer1.Report = rep;</code></pre>

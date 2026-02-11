@@ -9,7 +9,7 @@ topic: azure
 
 --IN MASTER *Not needed if using an existing elastic database 
 CREATE LOGIN CHSRUser 
-WITH PASSWORD = &#39;&#39;
+WITH PASSWORD = ''
 
 CREATE USER [CHSRUser] 
 FOR LOGIN [CHSRUser] 
@@ -25,9 +25,9 @@ ALTER ROLE db_datawriter ADD MEMBER [CHSRUser];
 ALTER ROLE db_executor ADD MEMBER [CHSRUser]; 
 
 --ANOTHER POSSIBLE OPTION
-EXEC sp_addrolemember &#39;db_datareader&#39;, &#39;CHSRUser&#39;;
-EXEC sp_addrolemember &#39;db_datawriter&#39;, &#39;CHSRUser&#39;;
-EXEC sp_addrolemember &#39;db_executor&#39;, &#39;CHSRUser&#39;;
+EXEC sp_addrolemember 'db_datareader', 'CHSRUser';
+EXEC sp_addrolemember 'db_datawriter', 'CHSRUser';
+EXEC sp_addrolemember 'db_executor', 'CHSRUser';
 
 GRANT CONNECT TO CHSRUser
 GRANT EXECUTE TO [db_executor]

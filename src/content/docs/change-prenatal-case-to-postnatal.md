@@ -7,15 +7,19 @@ categories: ["HFNY"]
 topic: HFNY
 ---
 
-&lt;pre&gt;&lt;code&gt;Prenatal to Postnatal (TCID entered)
+Scripts to convert cases between prenatal and postnatal status. Run inside a transaction and verify before committing.
+
+## Prenatal to Postnatal (TCID entered)
+
+```sql
 BEGIN TRANSACTION
-declare @newDOB datetime = &#39;[Put new DOB here]&#39;
-declare @newLevelDate datetime = &#39;[Put new level date here]&#39;
+declare @newDOB datetime = '[Put new DOB here]'
+declare @newLevelDate datetime = '[Put new level date here]'
 declare @HVCasePK int = [Put HVCasePK here]
 
 --Update the TCDOB
 update hvcase set tcdob = @newDOB, EDC = NULL where hvcasepk = @HVCasePK
-update tcid set tcdob = @newDOB where hvcasefk = @HVCasePK  
+update tcid set tcdob = @newDOB where hvcasefk = @HVCasePK
 
 --Remove the prenatal level row
 delete from HVLevel where hvlevelpk = [Put prenatal level row PK here]
@@ -25,14 +29,16 @@ update caseprogram set currentleveldate = @newLevelDate where caseprogrampk = [P
 update HVLevel set levelassigndate = @newLevelDate where hvlevelpk = [Put Level 1 row PK here]
 
 ROLLBACK
+```
 
-----------------------------------------------------------------------------------------------------------------------------------------------
---Prenatal to Postnatal (No TCID)
+## Prenatal to Postnatal (No TCID)
+
+```sql
 BEGIN TRANSACTION;
 
-DECLARE @PC1ID VARCHAR(13) = &#39;[Put PC1ID here]&#39;;
-DECLARE @newDOB DATETIME = &#39;[Put new DOB here]&#39;;
-DECLARE @newLevelDate DATETIME = &#39;[Put new level date here.  Usually the intake date.]&#39;;
+DECLARE @PC1ID VARCHAR(13) = '[Put PC1ID here]';
+DECLARE @newDOB DATETIME = '[Put new DOB here]';
+DECLARE @newLevelDate DATETIME = '[Put new level date here.  Usually the intake date.]';
 DECLARE @HVCasePK INT = (SELECT TOP (1) cp.HVCaseFK FROM dbo.CaseProgram cp WHERE cp.PC1ID = @PC1ID);
 
 --Look for the prenatal level row
@@ -57,17 +63,20 @@ SET LevelAssignDate = @newLevelDate, LevelFK = 14
 WHERE HVLevelPK = [Put prenatal level PK here];
 
 ROLLBACK;
------------------------------------------------------------------------------------------------------------------------------------------------------------
---Postnatal to Prenatal (No TCID)
+```
+
+## Postnatal to Prenatal (No TCID)
+
+```sql
 BEGIN TRANSACTION
 
-DECLARE @newDOB datetime = &#39;[Put new TCDOB here]&#39;
-declare @HVCasePK int =  [Put HVCasePK here]
-DECLARE @newLevelFK INT = (SELECT cl.codeLevelPK FROM dbo.codeLevel cl WHERE cl.ConstantName = &#39;LEVEL1_PRENATAL&#39;) 
+DECLARE @newDOB datetime = '[Put new TCDOB here]'
+declare @HVCasePK int = [Put HVCasePK here]
+DECLARE @newLevelFK INT = (SELECT cl.codeLevelPK FROM dbo.codeLevel cl WHERE cl.ConstantName = 'LEVEL1_PRENATAL')
 
-SELECT * FROM dbo.HVCase hc WHERE hc.HVCasePK =  @HVCasePK
-SELECT * FROM dbo.CaseProgram cp WHERE cp.HVCaseFK =  @HVCasePK
-SELECT * FROM dbo.HVLevel hl INNER JOIN dbo.codeLevel cl ON cl.codeLevelPK = hl.LevelFK WHERE hl.HVCaseFK =  @HVCasePK
+SELECT * FROM dbo.HVCase hc WHERE hc.HVCasePK = @HVCasePK
+SELECT * FROM dbo.CaseProgram cp WHERE cp.HVCaseFK = @HVCasePK
+SELECT * FROM dbo.HVLevel hl INNER JOIN dbo.codeLevel cl ON cl.codeLevelPK = hl.LevelFK WHERE hl.HVCaseFK = @HVCasePK
 
 --Update the TCDOB
 update hvcase set tcdob = NULL, EDC = @newDOB where HVCasePK = @HVCasePK
@@ -76,4 +85,5 @@ update hvcase set tcdob = NULL, EDC = @newDOB where HVCasePK = @HVCasePK
 update HVLevel set LevelFK = @newLevelFK where hvlevelpk = [Put HVLevelPK here]
 UPDATE dbo.CaseProgram SET CurrentLevelFK = @newLevelFK WHERE HVCaseFK = @HVCasePK
 
-ROLLBACK &lt;/code&gt;&lt;/pre&gt;
+ROLLBACK
+```
