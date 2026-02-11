@@ -1,5 +1,30 @@
 ---
 import { getCollection } from 'astro:content';
+import { readFileSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const docsDir = join(__dirname, '..', 'content', 'docs');
+
+function extractBody(id) {
+  try {
+    const path = join(docsDir, id + '.md');
+    if (!existsSync(path)) return '';
+    const raw = readFileSync(path, 'utf8');
+    const fmEnd = raw.indexOf('\n---\n', 4);
+    const body = fmEnd === -1 ? raw : raw.slice(fmEnd + 5);
+    return body
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/[#*_`~]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 4000);
+  } catch {
+    return '';
+  }
+}
 
 const docs = await getCollection('docs');
 const data = docs.map((d) => ({
@@ -8,6 +33,7 @@ const data = docs.map((d) => ({
   categories: d.data.categories ?? [],
   topic: d.data.topic ?? '',
   author: d.data.author ?? '',
+  content: extractBody(d.id),
 }));
 
 return new Response(JSON.stringify(data), {
