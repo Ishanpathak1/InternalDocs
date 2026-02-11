@@ -1,4 +1,6 @@
 ---
+export const prerender = true; // Generate at build time so content files exist (Vercel serverless excludes them at runtime)
+
 import { getCollection } from 'astro:content';
 import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
