@@ -33,6 +33,15 @@ const { title, showNav = true } = Astro.props;
           <div class="flex items-center gap-4">
             <button
               type="button"
+              class="search-trigger-btn flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:bg-slate-700"
+              aria-label="Search docs (Ctrl+K)"
+            >
+              <span aria-hidden="true">🔍</span>
+              <span>Search…</span>
+              <kbd class="hidden rounded bg-slate-200 px-1.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-600 dark:text-slate-300 sm:inline-block">⌘K</kbd>
+            </button>
+            <button
+              type="button"
               id="theme-toggle"
               aria-label="Toggle dark mode"
               class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
@@ -47,6 +56,107 @@ const { title, showNav = true } = Astro.props;
         </div>
       </nav>
     )}
+
+    <div id="search-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
+      <div id="search-overlay" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" tabindex="-1"></div>
+      <div class="fixed left-1/2 top-[15%] w-full max-w-xl -translate-x-1/2 rounded-xl border border-slate-200 bg-white shadow-2xl dark:border-slate-600 dark:bg-slate-800">
+        <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-600">
+          <span aria-hidden="true">🔍</span>
+          <input
+            type="search"
+            id="search-input"
+            placeholder="Search all docs…"
+            class="flex-1 bg-transparent text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+            autocomplete="off"
+            aria-label="Search docs"
+          />
+          <kbd class="rounded bg-slate-100 px-2 py-1 text-xs text-slate-500 dark:bg-slate-700 dark:text-slate-400">Esc</kbd>
+        </div>
+        <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2">
+          <p id="search-empty" class="py-8 text-center text-sm text-slate-500 dark:text-slate-400">Type to search across all docs</p>
+          <p id="search-no-results" class="hidden py-8 text-center text-sm text-slate-500 dark:text-slate-400">No docs match your search</p>
+          <ul id="search-list" class="hidden space-y-1"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const modal = document.getElementById('search-modal');
+        const overlay = document.getElementById('search-overlay');
+        const input = document.getElementById('search-input');
+        const list = document.getElementById('search-list');
+        const empty = document.getElementById('search-empty');
+        const noResults = document.getElementById('search-no-results');
+        const triggers = document.querySelectorAll('.search-trigger-btn');
+        let docs = [];
+
+        function openSearch() {
+          modal.classList.remove('hidden');
+          modal.setAttribute('aria-hidden', 'false');
+          input.value = '';
+          input.focus();
+          if (docs.length === 0) {
+            fetch('/search-data.json').then(r => r.json()).then(data => { docs = data; filterDocs(''); });
+          } else {
+            filterDocs('');
+          }
+        }
+
+        function closeSearch() {
+          modal.classList.add('hidden');
+          modal.setAttribute('aria-hidden', 'true');
+        }
+
+        function filterDocs(q) {
+          const lower = (q || '').toLowerCase().trim();
+          const terms = lower ? lower.split(/\s+/) : [];
+          const filtered = !terms.length ? docs : docs.filter(d => {
+            const title = (d.title || '').toLowerCase();
+            const cats = (d.categories || []).join(' ').toLowerCase();
+            const topic = (d.topic || '').toLowerCase();
+            const author = (d.author || '').toLowerCase();
+            const text = `${title} ${cats} ${topic} ${author}`;
+            return terms.every(t => text.includes(t));
+          });
+
+          const hasQuery = terms.length > 0;
+          empty.classList.toggle('hidden', hasQuery || filtered.length > 0);
+          if (noResults) noResults.classList.toggle('hidden', !hasQuery || filtered.length > 0);
+          list.classList.toggle('hidden', filtered.length === 0);
+          list.innerHTML = filtered.slice(0, 15).map(d => `
+            <li>
+              <a href="/docs/${d.id}" class="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+                 onclick="document.getElementById('search-modal').classList.add('hidden')">
+                <span class="font-medium">${escapeHtml(d.title)}</span>
+                ${(d.categories && d.categories.length) ? `<span class="ml-2 text-xs text-slate-500 dark:text-slate-400">${escapeHtml(d.categories.join(', '))}</span>` : ''}
+              </a>
+            </li>
+          `).join('');
+        }
+
+        function escapeHtml(s) {
+          const div = document.createElement('div');
+          div.textContent = s;
+          return div.innerHTML;
+        }
+
+        document.addEventListener('keydown', (e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            openSearch();
+          }
+          if (e.key === 'Escape') {
+            closeSearch();
+            input.blur();
+          }
+        });
+
+        triggers.forEach(btn => btn.addEventListener('click', openSearch));
+        if (overlay) overlay.addEventListener('click', closeSearch);
+        if (input) input.addEventListener('input', () => filterDocs(input.value));
+      })();
+    </script>
     <main class="px-4 py-8 sm:py-12">
       <slot />
     </main>

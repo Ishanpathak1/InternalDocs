@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+
+const docs = await getCollection('docs');
+const data = docs.map((d) => ({
+  id: d.id,
+  title: d.data.title,
+  categories: d.data.categories ?? [],
+  topic: d.data.topic ?? '',
+  author: d.data.author ?? '',
+}));
+
+return new Response(JSON.stringify(data), {
+  status: 200,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+---
