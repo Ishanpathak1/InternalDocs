@@ -10,7 +10,24 @@ topic: Technical Docs For HFNY
 
 # Form Development SOP for New Developers
 
+## Table of Contents
 
+- [1. Page structure and master page](#1-page-structure-and-master-page)
+- [2. Form panel layout (standard "form" look)](#2-form-panel-layout-standard-form-look)
+- [3. Buttons – CSS classes and placement](#3-buttons--css-classes-and-placement)
+- [4. Toast notifications (postback feedback)](#4-toast-notifications-postback-feedback)
+- [5. Inline alerts (static or server-toggled messages)](#5-inline-alerts-static-or-server-toggled-messages)
+- [6. Data tables (GridView + DataTables)](#6-data-tables-gridview-datatables)
+- [7. Modals](#7-modals)
+- [8. Colors and utility classes (reference)](#8-colors-and-utility-classes-reference)
+- [9. Common practices summary](#9-common-practices-summary)
+- [10. Design (how we design)](#10-design-how-we-design)
+- [11. How we get data](#11-how-we-get-data)
+- [12. How we test](#12-how-we-test)
+- [13. Step-by-step: creating a new form](#13-step-by-step-creating-a-new-form)
+- [14. Where and how we write JavaScript](#14-where-and-how-we-write-javascript)
+- [15. How to create a landing page](#15-how-to-create-a-landing-page)
+- [16. Database setup (SSMS and frontend use)](#16-database-setup-ssms-and-frontend-use)
 
 ---
 

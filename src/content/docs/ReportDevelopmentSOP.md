@@ -10,10 +10,30 @@ topic: Technical Docs For HFNY
 
 # Report Development SOP for New Developers
 
+Reference implementations:
+
 - **Catalog-based XtraReport**: HFNY/Reports/XtraReports/Lists/rptCHEERSReport.cs
 - **Catalog listing page**: HFNY/Reports/ReportCatalog.aspx
 - **Standalone report page**: HFNY/Reports/Demographics.aspx
 - **QA summary report**: HFNY/Reports/QA/QASummary.aspx
+
+## Table of Contents
+
+- [1. Report Types Overview](#1-report-types-overview)
+- [2. Reports Folder Structure](#2-reports-folder-structure)
+- [3. Catalog-Based XtraReport (Standard Pattern)](#3-catalog-based-xtrareport-standard-pattern)
+- [4. Adding a New Report (Step-by-Step)](#4-adding-a-new-report-step-by-step)
+- [5. Standalone Report Pages (Demographics, SupervisionExport)](#5-standalone-report-pages-demographics-supervisionexport)
+- [6. QA Reports (QASummary, QADetails)](#6-qa-reports-qasummary-qadetails)
+- [7. Master Page Differences](#7-master-page-differences)
+- [8. Report Summary Patterns (from Reporting summary methods.md)](#8-report-summary-patterns-from-reporting-summary-methodsmd)
+- [9. Special Report Types](#9-special-report-types)
+- [10. How We Design Reports](#10-how-we-design-reports)
+- [11. JavaScript and Reports](#11-javascript-and-reports)
+- [12. C# Classes and Practices (Reports)](#12-c-classes-and-practices-reports)
+- [13. Database and Configuration](#13-database-and-configuration)
+- [14. Checklist for a New Catalog Report](#14-checklist-for-a-new-catalog-report)
+- [15. How We Test Reports](#15-how-we-test-reports)
 
 ---
 
@@ -33,10 +53,10 @@ HFNY has three main report patterns:
 
 ```
 HFNY/Reports/
-├── ReportCatalog.aspx         -- Main catalog list (Repeater + ASPxWebDocumentViewer)
-├── ReportCatalogViewer.aspx   -- Viewer page (query: ?reportname=CHEERSReport)
-├── Demographics.aspx          -- Standalone report (Site.Master)
-├── SupervisionExport.aspx     -- Standalone Excel export
+├── ReportCatalog.aspx         -- Main catalog (Repeater + embedded ASPxWebDocumentViewer)
+├── ReportCatalogNew.aspx      -- Alternate catalog UI (table + viewer)
+├── Demographics.aspx          -- Standalone report page (filter + grid + Excel export)
+├── SupervisionExport.aspx     -- Standalone report page (filter + grid)
 ├── ReportHelper.cs            -- Quarters, regions, worker lists
 ├── ReportPayload.cs           -- Criteria passed to IReportBase reports
 ├── QA/
@@ -46,12 +66,16 @@ HFNY/Reports/
     ├── ReportTemplates/       -- ReportBase, IReportBase, QuarterlyReportBase
     ├── Lists/                 -- rptCHEERSReport, rptFAWMonthlyReport, etc.
     ├── Analysis/              -- Analysis reports
+    ├── Credentialing/          -- Credentialing reports
     ├── Quarterlies/           -- Quarterly reports
     ├── Ticklers/              -- Tickler reports
     ├── Training/              -- Training reports
+    ├── Forms/                 -- Form reports
+    ├── OneStep/               -- OneStep reports
     ├── DataRetrieval/         -- Typed datasets (*.xsd)
     └── Documentation/         -- PDF docs (ReportClass.pdf)
 ```
+
 
 ---
 
@@ -112,7 +136,7 @@ Common CriteriaOptions: `SED` (start/end dates), `QTR` (quarters), `WKL` (worker
 
 ---
 
-## 4. Adding a New Catalog Report (Step-by-Step)
+## 4. Adding a New Report (Step-by-Step)
 
 1. **Create the report class**
    - Add `rptYourReport.cs`, `rptYourReport.Designer.cs`, `rptYourReport.resx` under `Reports/XtraReports/Lists/` (or Analysis, Quarterlies, etc.)
@@ -131,7 +155,7 @@ Common CriteriaOptions: `SED` (start/end dates), `QTR` (quarters), `WKL` (worker
 4. **Documentation**
    - Place PDF in `Reports/XtraReports/Documentation/YourReport.pdf`
 5. **Data**
-   - Use SqlDataSource in designer bound to stored proc, or fill datasets in code before `OpenReport`
+   - Use a stored procedure to populate report data — this is the preferred method. Configure SqlDataSource in the report designer bound to the stored proc, or fill a DataSet/DataTable in RunReport by calling the stored proc. Alternative: use EF or inline queries only when a stored proc is not feasible.
 
 ---
 
@@ -140,9 +164,9 @@ Common CriteriaOptions: `SED` (start/end dates), `QTR` (quarters), `WKL` (worker
 These use `Site.Master` and follow form patterns from the Form SOP:
 
 - **Master**: `Site.Master`
-- **Structure**: `panel panel-primary`, `panel-body` with filters (form-control), GridView or export button
+- **Structure**: `panel panel-primary`, `panel-body` with filters (form-control), GridView (and optionally an Export button)
 - **Code-behind**: Load data in `Page_Load` (!IsPostBack), handle button click for run/export
-- **Data**: EF, Enterprise Library stored procs, or direct SqlConnection
+- **Data**: EF or Enterprise Library stored procs
 
 Example layout (Demographics.aspx): left column filters + Run Report / Export, right column GridView.
 
@@ -159,10 +183,10 @@ Example layout (Demographics.aspx): left column filters + Run Report / Export, r
 
 ## 7. Master Page Differences
 
-| Page Type      | Master         | ContentPlaceHolders                                       |
-| -------------- | -------------- | --------------------------------------------------------- |
-| Catalog/Viewer | Reports.Master | HeadContent, ScriptContent, ContentPlaceHolder1           |
-| Standalone/QA  | Site.Master    | HeadContent, FormName, ContentPlaceHolder1, ScriptContent |
+| Page Type     | Master         | ContentPlaceHolders                                       |
+| ------------- | -------------- | --------------------------------------------------------- |
+| Catalog       | Reports.Master | HeadContent, ScriptContent, ContentPlaceHolder1           |
+| Standalone/QA | Site.Master    | HeadContent, FormName, ContentPlaceHolder1, ScriptContent |
 
 Reports.Master nests inside Site.Master and provides the criteria sidebar (`divCriteria`) and ASPxWebDocumentViewer integration.
 
@@ -195,41 +219,25 @@ Reports.Master nests inside Site.Master and provides the criteria sidebar (`divC
 
 ---
 
-## 11. Where and How We Write JavaScript (Reports)
+## 11. JavaScript and Reports
 
-### 11.1 Script Bundles and Loading
+**Creating DevExpress reports does not require JavaScript.** Report layout and data binding are done in the report designer and C# code-behind.
 
-| Bundle                         | Scripts                                                          | Used By                          |
-| ------------------------------ | ---------------------------------------------------------------- | -------------------------------- |
-| `~/bundles/ReportCatalogPage` | ReportCatalogNew.js                                              | ReportCatalog.aspx (new catalog) |
-| `~/bundles/OldReportCatalogPage` | ReportCatalog.js, ReportCatalogCommon.js, ReportCatalogViewer.js | Legacy catalog flow              |
+JavaScript is used only for the **Report Catalog UI**. Standalone report pages (Demographics, SupervisionExport) and QA reports typically use minimal or no custom JS.
 
-- Bundles are registered in App_Start/BundleConfig.cs
-- ReportCatalog.aspx.cs adds `~/bundles/ReportCatalogPage` to ScriptManager if not already present
-- Reports.Master loads Site.Master's bundles (jQuery, Bootstrap, toast, cleave, etc.) and adds its own report-master-bundle
+### 11.1 Report Catalog Page
 
-### 11.2 Where Report JavaScript Lives
+Scripts (bundled in App_Start/BundleConfig.cs): ReportCatalogNew.js, ReportCatalog.js, ReportCatalogCommon.js. ReportCatalog.aspx.cs adds `~/bundles/ReportCatalogPage` to ScriptManager.
 
-- **ReportCatalog.js**: Report catalog page (DataTable init, filter/column label clicks, popovers, row click → navigate to ReportCatalogViewer)
-- **ReportCatalogCommon.js**: Shared logic for criteria toggling (`ToggleCriteriaBoxes`, `CalculateDefaultDates`, `ToggleByWhom`, `ToggleBreakdown`), validation, `PersistCriteria`/`RestoreCriteria` via sessionStorage
-- **ReportCatalogViewer.js**: Viewer page (restore criteria from sessionStorage, ToggleCriteriaBoxes, ByWhom/ServRefBreakdown handlers, `chkIncludeClosedCases` PC1ID toggle)
-- **ReportCatalogNew.js**: New catalog page (consolidated criteria handlers, row click navigation, DataTable setup)
+**Patterns**
+- `jQuery('[ID$="controlId"]')` for server controls
+- sessionStorage for criteria/defaults (`sessionStorage.criteria`, `sessionStorage.defaults`)
+- Row click → read ReportClass, CriteriaOptions, Defaults → store in sessionStorage/hidden fields → show criteria panel; Run Report displays in embedded viewer
+- Criteria divs shown/hidden based on CriteriaOptions (SED → divStartDate/divEndDate, WKL → divByWhom, etc.)
+- Client-side validation before Run Report; `hfIsValid` hidden field
+- `showNotification(type, title, text, duration)` for no-data/errors
 
-### 11.3 Patterns
-
-- **jQuery with ASP.NET**: Use `jQuery('[ID$="controlId"]')` for server controls (avoids client ID changes)
-- **sessionStorage**: Criteria and defaults passed catalog → viewer via `sessionStorage.criteria`, `sessionStorage.defaults` (JSON)
-- **Row click flow**: Catalog row click → read ReportClass, CriteriaOptions, Defaults from table cells → store in sessionStorage → redirect to `ReportCatalogViewer.aspx?reportname={ReportClass}`
-- **Criteria divs**: JavaScript shows/hides divs in Reports.Master based on CriteriaOptions (SED → divStartDate/divEndDate, WKL → divByWhom, etc.)
-- **Validation**: Client-side validation before Run Report; `hfIsValid` hidden field set by JS
-- **Toast notifications**: `showNotification(type, title, text, duration)` (from Site.Master) for no-data, errors
-
-### 11.4 Page-Specific Inline Script
-
-- ReportCatalog.aspx: ScriptContent is empty; all JS from bundles
-- ReportCatalogViewer.aspx: ScriptContent has `init()` for Chrome print helper
-- Standalone reports (Demographics): No report-specific JS; use form patterns from Form SOP
-- QA reports (QASummary): ScriptContent for print-friendly mode (hide nav, Print/Close buttons)
+**Script placement**: ReportCatalog.aspx uses ScriptContent empty; all JS from bundles. QA reports (e.g. QASummary) may add inline script for print-friendly mode.
 
 ---
 
