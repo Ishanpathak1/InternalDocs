@@ -85,6 +85,18 @@ const writtenDate = entry.data.pubDate
     html.dark .doc-prose table td {
       color: #cbd5e1;
     }
+    /* Mermaid diagrams: centered, readable */
+    .doc-prose pre.mermaid {
+      display: flex;
+      justify-content: center;
+      padding: 1.5rem;
+      background: transparent !important;
+      border: none;
+    }
+    .doc-prose pre.mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
     /* Inline code inside tables: subtle, same font as table text */
     .doc-prose table code {
       font-family: 'Source Sans 3', system-ui, sans-serif !important;
@@ -185,4 +197,8 @@ const writtenDate = entry.data.pubDate
       )}
     </footer>
   </article>
+  <script>
+    import mermaid from 'mermaid';
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+  </script>
 </BaseLayout>
