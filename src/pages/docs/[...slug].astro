@@ -28,7 +28,7 @@ const writtenDate = entry.data.pubDate
     })
   : null;
 ---
-<BaseLayout title={entry.data.title}>
+<BaseLayout title={`CHSR Docs - ${entry.data.categories[0]} - ${entry.data.title}`}>
   <style is:global>
     /* One solid background on the block only – no per-line “highlight” */
     .doc-prose pre *,
@@ -96,6 +96,48 @@ const writtenDate = entry.data.pubDate
     .doc-prose pre.mermaid svg {
       max-width: 100%;
       height: auto;
+    }
+    /* Collapsible code blocks */
+    .doc-prose .doc-code-details {
+      margin: 1rem 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    html.dark .doc-prose .doc-code-details {
+      border-color: #334155;
+    }
+    .doc-prose .doc-code-summary {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: #f8fafc;
+      color: #475569;
+      user-select: none;
+      list-style: none;
+      font-family: 'Source Sans 3', system-ui, sans-serif;
+    }
+    .doc-prose .doc-code-summary::-webkit-details-marker {
+      display: none;
+    }
+    .doc-prose .doc-code-summary::before {
+      content: '▸ ';
+      display: inline-block;
+      margin-right: 0.25rem;
+      transition: transform 0.2s;
+    }
+    .doc-prose .doc-code-details[open] .doc-code-summary::before {
+      transform: rotate(90deg);
+    }
+    html.dark .doc-prose .doc-code-summary {
+      background: #1e293b;
+      color: #94a3b8;
+    }
+    .doc-prose .doc-code-details pre {
+      margin: 0;
+      border-radius: 0;
+      border: none;
     }
     /* Inline code inside tables: subtle, same font as table text */
     .doc-prose table code {
