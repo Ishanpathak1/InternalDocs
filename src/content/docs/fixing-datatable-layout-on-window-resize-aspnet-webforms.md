@@ -122,7 +122,6 @@ jQuery(window).on('resize', function () {
 
 ## References
 
-- [DataTables API: columns().adjust()](https://datatables.net/reference/api/columns().adjust())
 - [DataTables API: draw()](https://datatables.net/reference/api/draw())
 - [jQuery resize event](https://api.jquery.com/resize/)
 
