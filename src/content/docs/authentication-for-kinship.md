@@ -1,5 +1,5 @@
 ---
-title: How Authentication Works in Kinship: ASP.NET Core Identity, Claims, and Role Context
+title: "How Authentication Works in Kinship: ASP.NET Core Identity, Claims, and Role Context"
 
 author: Ishan Pathak
 
