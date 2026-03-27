@@ -16,9 +16,6 @@ topic: Technical Docs For Kinship
 
 # How Authentication Works in Kinship: ASP.NET Core Identity, Claims, and Role Context
 
-When working on a legacy-to-modern migration like **Kinship**, one of the most important things to understand is not just *who* is authenticated, but also *what context* that user is operating in.
-
-In Kinship, authentication is not only about logging in with a username and password. It also includes:
 
 - determining whether the user is approved,
 - verifying that they have at least one valid program assignment,
@@ -239,14 +236,6 @@ app.MapPost("/auth/login", async (
 });
 ```
 
-### Why this is a strong pattern
-
-This avoids a common mistake where apps treat **successful password authentication** as enough.  
-Kinship adds an extra layer:
-
-> A user is only “usable” after they both authenticate **and** have a valid accessible program context.
-
----
 
 ## Authentication Endpoints in Kinship
 
@@ -433,38 +422,9 @@ Requires:
 
 - `kinship:confidentiality_accepted == True`
 
-This is a great example of a business-rule-driven authorization claim.
 
 ---
 
-## Current Usage of Policies
-
-In the code you reviewed, the most obvious direct usage is:
-
-- `AdminAccess` on `AdminStaff.razor`
-
-Other policies are available and likely intended for:
-
-- future pages,
-- API endpoints,
-- stronger page-level enforcement as the app evolves.
-
-There is also a helper:
-
-- `CurrentUserContextAccessor`
-
-which reads values like:
-
-- `UserLoginPk`
-- active program
-- active role
-- confidentiality status
-
-directly from the `ClaimsPrincipal`.
-
-That makes it easier for services or components to avoid repeating claim-parsing logic.
-
----
 
 ## End-to-End Authentication Flow in Kinship
 
@@ -490,88 +450,11 @@ Putting it all together, the full flow looks like this:
    - UI visibility
    - feature access
 
-### In one sentence
-
-> Kinship authentication is not just “log in and go” — it is a layered model where Identity handles authentication, custom claims represent active program context, and `RoleContextService` ensures the UI behaves according to that context.
-
----
-
-## Why This Architecture Works Well for Kinship
-
-This approach is especially effective for an enterprise-style application because it cleanly separates concerns:
-
-### 1. Identity remains standard and maintainable
-
-Using ASP.NET Core Identity means the app benefits from:
-
-- secure cookie handling,
-- lockout support,
-- token providers,
-- consistent authentication patterns.
-
-### 2. Business context is modeled explicitly
-
-Instead of assuming one user = one role, the system supports:
-
-- multiple assignments,
-- role switching,
-- context-aware claims.
-
-### 3. UI behavior stays aligned with backend state
-
-Because `RoleContextService` is initialized from the authenticated user and current DB-backed context, the UI can reflect:
-
-- correct menus,
-- correct navigation,
-- correct access states.
-
-### 4. It supports legacy migration realities
-
-For a system like Kinship, where older role semantics still matter, this pattern helps bridge:
-
-- modern Identity-based auth
-- legacy program/role behavior
-- Blazor-based UI flow
-
-That is exactly the kind of design that makes migration safer and more incremental.
-
----
-
-## Final Thoughts
-
-If you are debugging or extending Kinship authentication, the most important mental model is this:
-
-- **Authentication** answers: *Who is this user?*
-- **Claims** answer: *What context are they currently in?*
-- **RoleContextService** answers: *How should the UI behave for them right now?*
-
-That separation is the key to understanding why:
-
-- a user can be logged in but still be redirected,
-- a role can exist but not yet be active,
-- and UI access may depend on more than just `[Authorize]`.
-
-For Kinship, that layered design is not accidental — it is what allows the application to handle real-world enterprise access patterns safely.
-
----
-
 ## Files Referenced
 
 - `Kinship/Program.cs`
 - `Kinship/Services/UserAccessService.cs`
 - `Kinship/Services/KinshipClaimsPrincipalFactory.cs`
 - `Kinship/Components/Layout/MainLayout.razor`
-
----
-
-## Suggested Next Follow-Up Blog Posts
-
-If you want to continue documenting Kinship, the best next technical posts would be:
-
-1. **First Login with Multiple Program Assignments in Kinship**
-2. **How Role Switching Works in Kinship**
-3. **Using `RoleContextService` for UI Authorization in Blazor**
-4. **How Kinship Refreshes Claims After Context Changes**
-5. **Admin vs Navigator Access in Kinship**
 
 ---
