@@ -1,3 +1,11 @@
+---
+title: HFNY Git Branching, Testing, and Release Process
+author: Derek
+pubDate: 2026-04-06
+categories: [HFNY]
+description: Standard branching, testing, and release workflow for the HFNY repositories.
+---
+
 # HFNY Git Branching, Testing, and Release Process
 
 > ⚠️ **All feature branches must be created from `Staging`, not `Develop`.**
