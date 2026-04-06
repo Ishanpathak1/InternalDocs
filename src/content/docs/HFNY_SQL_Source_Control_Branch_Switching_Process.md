@@ -1,3 +1,11 @@
+---
+title: HFNY SQL Source Control Branch Switching Process
+author: Derek
+pubDate: 2026-04-06
+categories: [HFNY]
+description: Standard process for switching branches in the HFNY SQL repository using Git and Redgate SQL Source Control.
+---
+
 # HFNY SQL Source Control Branch Switching Process
 
 ## Purpose
